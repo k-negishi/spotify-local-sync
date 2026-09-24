@@ -37,13 +37,11 @@ SpotifyLocal/
 リポジトリを取得し、サンプルから個人用設定を作成します。
 
 ```bash
-git clone https://github.com/OWNER/spotify-local-sync.git
+git clone https://github.com/k-negishi/spotify-local-sync.git
 cd spotify-local-sync
 cp sync.tsv.example sync.tsv
 chmod +x sync.sh
 ```
-
-`OWNER`はGitHubのユーザー名に置き換えてください。
 
 ## `sync.tsv`の書式
 
