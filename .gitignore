@@ -1,0 +1,15 @@
+# Local sync configuration
+sync.tsv
+
+# macOS metadata
+.DS_Store
+
+# Audio files must never be committed to this repository
+*.m4a
+*.mp3
+*.aac
+*.flac
+*.wav
+*.aiff
+*.aif
+*.ogg
