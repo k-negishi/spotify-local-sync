@@ -7,7 +7,7 @@ Music.appのライブラリから、Spotifyで再生したいローカル音源�
 ## 必要なもの
 
 - macOS
-- Bash
+- Python 3.9以降
 - Music.appで管理しているローカル音源
 
 このスクリプトは、Music.appのメディアディレクトリが次の場所にあることを前提としています。
@@ -25,7 +25,7 @@ SpotifyLocal/
 ├── music/                       # コピー先（Git管理外）
 └── scripts/                     # このリポジトリ
     ├── README.md
-    ├── sync.sh
+    ├── sync.py
     ├── sync.tsv                 # 個人用設定（Git管理外）
     └── sync.tsv.example
 ```
@@ -40,7 +40,7 @@ SpotifyLocal/
 git clone https://github.com/k-negishi/spotify-local-sync.git
 cd spotify-local-sync
 cp sync.tsv.example sync.tsv
-chmod +x sync.sh
+chmod +x sync.py
 ```
 
 ## `sync.tsv`の書式
@@ -84,16 +84,16 @@ Hi-STANDARD<TAB>MAKING THE ROAD<TAB>
 このリポジトリ内で実行します。
 
 ```bash
-./sync.sh
+./sync.py
 ```
 
-または、Bashを明示して実行します。
+または、Python 3.9以降を明示して実行します。
 
 ```bash
-bash ./sync.sh
+python3 ./sync.py
 ```
 
-`sh ./sync.sh`は使用しないでください。このスクリプトはBashのプロセス置換を使用しています。
+外部ライブラリは使用していません。
 
 実行結果には次のいずれかが表示されます。
 
