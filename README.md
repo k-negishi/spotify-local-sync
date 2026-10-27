@@ -1,114 +1,65 @@
 # spotify-local-sync
 
-Music.appのライブラリから、Spotifyで再生したいローカル音源だけを別ディレクトリへコピーするmacOS向けスクリプトです。
+Music.appのライブラリから、Spotifyで聴く音源を選んでコピーするmacOS向けスクリプト。元の音源は変更せず、コピー先の音源も自動削除しない。
 
-コピー対象は`sync.tsv`で指定します。元の音源は変更・削除せず、コピー先に同じ内容のファイルがある場合はスキップします。`sync.tsv`から項目を削除しても、コピー済みの音源は自動削除しません。
+## 日々の運用（iPhone + iCloud Drive）
 
-## 必要なもの
+リポジトリをiCloud Driveの`SpotifyLocal/scripts/`に置くと、コピー先は`SpotifyLocal/music/`になる。MacとiPhoneで同じApple Accountを使い、iCloud Driveを有効にする。
 
-- macOS
-- Python 3.9以降
-- Music.appで管理しているローカル音源
+1. Macで`scripts/sync.tsv`を編集し、追加したい曲を指定する。
+2. `scripts/`で実行し、iCloud Driveへのアップロード完了を待つ。
 
-このスクリプトは、Music.appのメディアディレクトリが次の場所にあることを前提としています。
+   ```bash
+   ./sync.py
+   ```
 
-```text
-~/Music/Music/Media.localized
-```
+3. iPhoneの「ファイル」で「iCloud Drive」>「SpotifyLocal」>「music」を開き、音源をコピーして「このiPhone内」>「Spotify」へペーストする。複数曲をまとめて選べる。iCloud上の音源はダウンロードしてからコピーする。
+4. Spotifyの「ライブラリ」>「ローカルファイル」から再生する。初回は「設定とプライバシー」>「アプリとデバイス」>「ローカルファイル」で「このデバイスのオーディオファイルを表示」を有効にし、メディアへのアクセスを許可する。
 
-## ディレクトリ構成
-
-このリポジトリを、音源のコピー先と同じ親ディレクトリに配置します。
-
-```text
-SpotifyLocal/
-├── music/                       # コピー先（Git管理外）
-└── scripts/                     # このリポジトリ
-    ├── README.md
-    ├── sync.py
-    ├── sync.tsv                 # 個人用設定（Git管理外）
-    └── sync.tsv.example
-```
-
-`scripts/`の配置場所にかかわらず、コピー先はその親ディレクトリにある`music/`です。
+同名ファイルを更新するときは、iPhone内の古いファイルを削除してからコピーし直す。`sync.tsv`から項目を削除しても、コピー済みの音源は残る。
 
 ## セットアップ
 
-リポジトリを取得し、サンプルから個人用設定を作成します。
+- macOS、Python 3.9以降、Music.appで管理している音源が必要。
+- 音源の場所は`~/Music/Music/Media.localized`。
+- iPhoneで使う場合、リポジトリをiCloud Driveの`SpotifyLocal/scripts/`に配置する。コピー先`music/`はその親ディレクトリに作成される。
+- リポジトリを取得し、初回設定を作成する。
 
-```bash
-git clone https://github.com/k-negishi/spotify-local-sync.git
-cd spotify-local-sync
-cp sync.tsv.example sync.tsv
-chmod +x sync.py
-```
+  ```bash
+  git clone https://github.com/k-negishi/spotify-local-sync.git
+  cd spotify-local-sync
+  cp sync.tsv.example sync.tsv
+  chmod +x sync.py
+  ```
 
-## `sync.tsv`の書式
+外部ライブラリは不要。`./sync.py`または`python3 ./sync.py`で実行する。`COPY`は新規・変更ファイルのコピー、`SKIP`は同一ファイルのスキップ、`WARN`は指定項目が見つからないことを示す。
 
-`sync.tsv`は、ヘッダーを含むタブ区切りのファイルです。
+## `sync.tsv`の指定
+
+ヘッダー付きのタブ区切り。アーティスト名、アルバム名、曲名はMusic.appのディレクトリ名・ファイル名に合わせる。
 
 ```tsv
 artist<TAB>album<TAB>track
 Hi-STANDARD<TAB><TAB>
 ELLEGARDEN<TAB>Pepperoni Quattro<TAB>
 サバシスター<TAB>覚悟を決めろ！<TAB>ジャージ (2024 ver.)
-```
-
-上記の`<TAB>`は、実際のファイルではタブ文字です。リポジトリに含まれる`sync.tsv.example`は、そのままコピーして利用できます。
-
-各列の指定方法は次のとおりです。
-
-| 指定 | 動作 |
-| --- | --- |
-| `artist`のみ | アーティスト配下の全音源をコピー |
-| `artist`と`album` | 指定アルバムの全音源をコピー |
-| `artist`、`album`、`track` | 指定アルバム内の曲をコピー |
-| `artist`と`track` | アーティスト配下の全アルバムから曲を検索してコピー |
-
-アルバム全体を指定する場合の例です。
-
-```tsv
 Hi-STANDARD<TAB>MAKING THE ROAD<TAB>
 ```
 
-アーティスト名、アルバム名、曲名は、Music.appが作成したディレクトリ名およびファイル名と一致させてください。曲名については、ファイル名の先頭にあるトラック番号と空白を省略できます。
+`<TAB>`は実際にはタブ文字。最後の例はアルバム全体の指定。
 
-たとえば、次のファイルは`STAY GOLD`として指定できます。
+| 記入する列 | コピー対象 |
+| --- | --- |
+| artist | アーティスト配下の全音源 |
+| artist、album | 指定アルバム |
+| artist、album、track | 指定アルバム内の曲 |
+| artist、track | 全アルバムから一致する曲 |
 
-```text
-06 STAY GOLD.m4a
-```
-
-## 実行
-
-このリポジトリ内で実行します。
-
-```bash
-./sync.py
-```
-
-または、Python 3.9以降を明示して実行します。
-
-```bash
-python3 ./sync.py
-```
-
-外部ライブラリは使用していません。
-
-実行結果には次のいずれかが表示されます。
-
-- `COPY`: 新規ファイル、または内容が変更されたファイルをコピー
-- `SKIP`: コピー先に同一内容のファイルが存在
-- `WARN`: 指定したアーティスト、アルバム、または曲が見つからない
+曲名はファイル名と一致させる。先頭のトラック番号と空白は省略できる（例：`06 STAY GOLD.m4a`は`STAY GOLD`）。
 
 ## Spotifyで使う
 
-Mac版Spotifyの設定で「ローカルファイルを表示する」を有効にし、コピー先の`music/`を参照先として追加します。
+- **iPhone:** iCloud Drive上の`music/`に置くだけでは表示されない。「このiPhone内/Spotify」へコピーする。
+- **Mac:** Spotifyの設定で「ローカルファイルを表示する」を有効にし、コピー先の`music/`を参照先に追加する。
 
-iPhoneで利用する場合は、必要な音源をiCloud Driveなどを経由して「このiPhone内」のSpotifyフォルダへコピーしてください。
-
-## 注意事項
-
-- 音源ファイルと個人用の`sync.tsv`はGit管理しないでください。
-- このスクリプトはコピー先からファイルを削除しません。
-- コピーした音源の利用・管理は、各音源の権利と利用条件に従ってください。
+音源ファイルと個人用の`sync.tsv`はGit管理しない。コピーした音源の利用は、各音源の権利と利用条件に従う。
