@@ -43,7 +43,6 @@ artist<TAB>album<TAB>track
 Hi-STANDARD<TAB><TAB>
 ELLEGARDEN<TAB>Pepperoni Quattro<TAB>
 サバシスター<TAB>覚悟を決めろ！<TAB>ジャージ (2024 ver.)
-Hi-STANDARD<TAB>MAKING THE ROAD<TAB>
 ```
 
 `<TAB>`は実際にはタブ文字。最後の例はアルバム全体の指定。
